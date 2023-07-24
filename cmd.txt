@@ -1,0 +1,21 @@
+#https://github.com/WongKinYiu/yolov7#transfer-learning
+
+# finetune p5 models
+python train.py --workers 8 --device 0 --batch-size 32 --data data/custom.yaml --img 640 640 --cfg cfg/training/yolov7-custom.yaml --weights 'yolov7_training.pt' --name yolov7-custom --hyp data/hyp.scratch.custom.yaml
+
+# train smoke
+python train.py --workers 8 --device 0 --batch-size 8 --data data/fire.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights 'yolov7_training.pt' --name yolov7-fire --hyp data/hyp.scratch.custom.yaml
+
+tensorboard --logdir runs/train
+
+# test smoke model
+python detect.py --weights best.pt --conf 0.25 --img-size 640 --source smoke.jpg
+
+# train fire
+python train.py --workers 8 --device 0 --batch-size 8 --data data/fire.yaml --img 640 640 --cfg cfg/training/yolov7.yaml --weights 'yolov7_training.pt' --name yolov7-fire --hyp data/hyp.scratch.custom.yaml
+
+# test fire model
+python detect.py --weights best.pt --conf 0.25 --img-size 640 --source car.jpg
+
+# finetune p6 models
+python train_aux.py --workers 8 --device 0 --batch-size 16 --data data/custom.yaml --img 1280 1280 --cfg cfg/training/yolov7-w6-custom.yaml --weights 'yolov7-w6_training.pt' --name yolov7-w6-custom --hyp data/hyp.scratch.custom.yaml
